@@ -147,7 +147,7 @@ export default function App() {
                   كيمياء بلس.ai
                 </h1>
                 <span className="text-[10px] text-muted font-bold mt-1">
-                  تم التطوير من عبدالرحمن لأخيه معتصم محمد في خلال عشر دقايق
+                  الطالب الأسطوره معتصم محمد
                 </span>
               </div>
             </div>
