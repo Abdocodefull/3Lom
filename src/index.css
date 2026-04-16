@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0A0A0B;
+  --color-accent: #CCFF00;
+  --color-surface: #161618;
+  --color-border: #2D2D30;
+  --color-muted: #8E8E93;
+  
+  --font-sans: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-white font-sans;
+  }
+}
+
+.hero-title {
+  font-size: clamp(3rem, 8vw, 5.25rem);
+  line-height: 0.95;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+.sidebar-header {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  @apply text-muted font-bold;
+}
