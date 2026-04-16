@@ -558,7 +558,7 @@ export default function App() {
             <span className="text-xl font-black tracking-tighter text-accent">كيمياء بلس.ai</span>
           </div>
           <p className="text-muted text-sm font-bold uppercase tracking-widest">
-            تم التطوير من عبدالرحمن لأخيه معتصم محمد في خلال عشر دقايق
+            الطالب الأسطوره معتصم محمد 
           </p>
         </div>
       </footer>
