@@ -63,9 +63,13 @@ const AccentMap: Record<string, string> = {
 
 export default function App() {
   const [activeTopicId, setActiveTopicId] = useState<string>(TOPICS[0].id);
-  const [viewMode, setViewMode] = useState<'learn' | 'quiz'>('learn');
+  const [viewMode, setViewMode] = useState<'learn' | 'quiz' | 'lab'>('learn');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
+  // Lab State
+  const [phValue, setPhValue] = useState(7);
+  const [flameElement, setFlameElement] = useState<string | null>(null);
+
   // Quiz State
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -110,6 +114,18 @@ export default function App() {
     setIsAnswered(false);
   };
 
+  const getPhColor = (val: number) => {
+    if (val < 7) return 'from-red-500 to-orange-400';
+    if (val === 7) return 'from-green-400 to-green-600';
+    return 'from-blue-400 to-purple-600';
+  };
+
+  const getPhType = (val: number) => {
+    if (val < 7) return 'حمضي';
+    if (val === 7) return 'متعادل';
+    return 'قاعدي';
+  };
+
   return (
     <div className="min-h-screen bg-bg font-sans text-white" dir="rtl">
       {/* Header */}
@@ -126,9 +142,14 @@ export default function App() {
               <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-bg font-black">
                 +
               </div>
-              <h1 className="text-2xl font-black tracking-tighter text-accent">
-                كيمياء بلس.ai
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-2xl font-black tracking-tighter text-accent leading-none">
+                  كيمياء بلس.ai
+                </h1>
+                <span className="text-[10px] text-muted font-bold mt-1">
+                  تم التطوير من عبدالرحمن لأخيه معتصم محمد في خلال عشر دقايق
+                </span>
+              </div>
             </div>
           </div>
           
@@ -145,12 +166,16 @@ export default function App() {
             >
               الاختبارات
             </button>
-            <span>مكتبتي</span>
-            <span>الإحصائيات</span>
+            <button 
+              onClick={() => setViewMode('lab')}
+              className={`transition-colors ${viewMode === 'lab' ? 'text-accent' : 'hover:text-white'}`}
+            >
+              المعمل
+            </button>
           </nav>
 
           <div className="hidden sm:flex items-center gap-2 text-sm font-bold">
-            أهلاً، طالب <div className="w-2 h-2 rounded-full bg-[#00FF88]"></div>
+            <div className="w-2 h-2 rounded-full bg-[#00FF88]"></div> متصل الآن
           </div>
         </div>
       </header>
@@ -204,15 +229,32 @@ export default function App() {
             </div>
 
             <div className="space-y-6">
-              <p className="sidebar-header">تقدمك الدراسي</p>
-              <div className="space-y-3">
-                <div className="h-1 bg-border w-full rounded-full overflow-hidden">
-                  <div className="h-full w-2/3 bg-accent rounded-full"></div>
-                </div>
-                <div className="flex justify-between text-[10px] font-bold text-muted">
-                  <span>65% من الهدف</span>
-                  <span>14 ساعة</span>
-                </div>
+              <p className="sidebar-header">أدوات إضافية</p>
+              <div className="space-y-2">
+                <button
+                  onClick={() => { setViewMode('lab'); setIsSidebarOpen(false); }}
+                  className={`
+                    w-full flex items-center gap-3 p-4 rounded-xl text-right transition-all border
+                    ${viewMode === 'lab' 
+                      ? 'bg-surface border-accent text-accent' 
+                      : 'bg-surface border-border text-muted hover:border-muted hover:text-white'}
+                  `}
+                >
+                  <FlaskConical className="w-5 h-5" />
+                  <span className="text-sm font-bold">المعمل الافتراضي</span>
+                </button>
+                <button
+                  onClick={() => { setViewMode('quiz'); setIsSidebarOpen(false); }}
+                  className={`
+                    w-full flex items-center gap-3 p-4 rounded-xl text-right transition-all border
+                    ${viewMode === 'quiz' 
+                      ? 'bg-surface border-accent text-accent' 
+                      : 'bg-surface border-border text-muted hover:border-muted hover:text-white'}
+                  `}
+                >
+                  <BrainCircuit className="w-5 h-5" />
+                  <span className="text-sm font-bold">بنك الأسئلة</span>
+                </button>
               </div>
             </div>
           </div>
@@ -280,23 +322,123 @@ export default function App() {
                         </div>
                       </div>
                     )}
+                  </div>
+                </div>
+              </motion.div>
+            ) : viewMode === 'lab' ? (
+              <motion.div
+                key="lab"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-12"
+              >
+                <div className="max-w-3xl">
+                  <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-widest mb-6">
+                    المعمل الافتراضي
+                  </span>
+                  <h2 className="hero-title mb-8">استكشف الكيمياء عملياً</h2>
+                  <p className="text-xl text-muted leading-relaxed">
+                    تفاعل مع الأدوات الكيميائية واكتشف النتائج في بيئة آمنة وممتعة.
+                  </p>
+                </div>
 
-                    {activeTopic.id === 'ph-scale' && (
-                      <div className="bg-surface p-10 rounded-[2rem] border border-border">
-                        <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
-                          <div className="w-1.5 h-8 bg-accent rounded-full" />
-                          مقياس pH
-                        </h3>
-                        <div className="relative h-2 bg-border rounded-full mb-6 overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-l from-red-500 via-accent to-blue-500 opacity-50" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                  {/* pH Tester */}
+                  <div className="bg-surface p-10 rounded-[2rem] border border-border">
+                    <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+                      <div className="w-1.5 h-8 bg-accent rounded-full" />
+                      مختبر الرقم الهيدروجيني (pH)
+                    </h3>
+                    
+                    <div className="space-y-10">
+                      <div className="relative h-4 bg-border rounded-full overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-l from-red-500 via-green-500 to-blue-500" />
+                        <motion.div 
+                          className="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_10px_white]"
+                          animate={{ left: `${(phValue / 14) * 100}%` }}
+                        />
+                      </div>
+
+                      <div className="flex justify-between items-center bg-bg p-8 rounded-2xl border border-border">
+                        <div className="text-center">
+                          <span className="sidebar-header block mb-2">القيمة</span>
+                          <span className="text-5xl font-black text-accent">{phValue}</span>
                         </div>
-                        <div className="flex justify-between text-[10px] font-black text-muted uppercase tracking-widest">
-                          <span>قاعدي</span>
-                          <span>متعادل</span>
-                          <span>حمضي</span>
+                        <div className="text-center">
+                          <span className="sidebar-header block mb-2">النوع</span>
+                          <span className={`text-2xl font-black bg-gradient-to-r ${getPhColor(phValue)} bg-clip-text text-transparent`}>
+                            {getPhType(phValue)}
+                          </span>
                         </div>
                       </div>
-                    )}
+
+                      <div className="grid grid-cols-3 gap-4">
+                        {[
+                          { name: 'ليمون', val: 2 },
+                          { name: 'ماء', val: 7 },
+                          { name: 'صابون', val: 12 },
+                          { name: 'خل', val: 3 },
+                          { name: 'حليب', val: 6 },
+                          { name: 'منظف', val: 13 }
+                        ].map((item) => (
+                          <button
+                            key={item.name}
+                            onClick={() => setPhValue(item.val)}
+                            className="p-4 bg-bg border border-border rounded-xl font-bold hover:border-accent transition-colors"
+                          >
+                            {item.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Flame Test */}
+                  <div className="bg-surface p-10 rounded-[2rem] border border-border">
+                    <h3 className="text-2xl font-black mb-8 flex items-center gap-3">
+                      <div className="w-1.5 h-8 bg-accent rounded-full" />
+                      اختبار اللهب
+                    </h3>
+                    
+                    <div className="flex flex-col items-center gap-10">
+                      <div className="relative w-48 h-64 flex items-end justify-center">
+                        {/* Burner */}
+                        <div className="w-12 h-24 bg-zinc-800 rounded-t-lg border-x border-t border-zinc-700" />
+                        {/* Flame */}
+                        <AnimatePresence mode="wait">
+                          {flameElement && (
+                            <motion.div
+                              key={flameElement}
+                              initial={{ opacity: 0, scale: 0 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0 }}
+                              className={`absolute bottom-24 w-24 h-40 rounded-full blur-xl opacity-80
+                                ${flameElement === 'النحاس' ? 'bg-emerald-400' : 
+                                  flameElement === 'الليثيوم' ? 'bg-rose-500' : 
+                                  flameElement === 'الصوديوم' ? 'bg-amber-400' : 
+                                  flameElement === 'البوتاسيوم' ? 'bg-purple-400' : 'bg-blue-400'}
+                              `}
+                            />
+                          )}
+                        </AnimatePresence>
+                        <div className="absolute bottom-24 w-12 h-24 bg-blue-500/30 rounded-full blur-md" />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 w-full">
+                        {['النحاس', 'الليثيوم', 'الصوديوم', 'البوتاسيوم'].map((el) => (
+                          <button
+                            key={el}
+                            onClick={() => setFlameElement(el)}
+                            className={`p-4 rounded-xl font-bold border transition-all
+                              ${flameElement === el ? 'bg-accent text-bg border-accent' : 'bg-bg border-border text-muted hover:border-muted'}
+                            `}
+                          >
+                            {el}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted font-bold">اختر عنصراً لمشاهدة لون لهبه المميز</p>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -415,7 +557,9 @@ export default function App() {
             </div>
             <span className="text-xl font-black tracking-tighter text-accent">كيمياء بلس.ai</span>
           </div>
-          <p className="text-muted text-sm font-bold uppercase tracking-widest">تم التطوير لدعم التفوق الدراسي</p>
+          <p className="text-muted text-sm font-bold uppercase tracking-widest">
+            تم التطوير من عبدالرحمن لأخيه معتصم محمد في خلال عشر دقايق
+          </p>
         </div>
       </footer>
     </div>
